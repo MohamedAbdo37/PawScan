@@ -1,74 +1,115 @@
-import PawScanLogo from "./PawScanLogo";
-// import { ArrowRight, User } from "react-feather"
+import { useState } from 'react'
+import { Dialog, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, Popover, PopoverButton, PopoverGroup, PopoverPanel } from '@headlessui/react'
+import { Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import PawScanLogo from './PawScanLogo'
 
+const navLinks = [
+  { name: 'Use the AI Model', href: '/ai-model' },
+  { name: 'Features', href: '/features' },
+  { name: 'About Us', href: '/about' },
+]
 
-
-const Navbar = () => {
-  const navLinks = [
-    { name: 'Use the AI Model', path: '/ai-model' },
-    { name: 'Features', path: '/features' },
-    { name: 'About Us', path: '/about' },
-  ];
+export default function Navbar() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    // hover:bg-[#555555] transition duration-300
-    <nav className="bg-[#2F5249] p-4 py-2 shadow-lg ">
-      {/* Container for Navbar Content */}
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
-        {/* Brand/Logo Section */}
-        <div className="text-white text-3xl font-extrabold mb-4 md:mb-0 transform hover:scale-105 transition duration-300">
-            
-          <a href="/" >
-            <PawScanLogo/>
-          </a>
-        </div>
-
-        {/* Navigation Links */}
-        <div className="flex justify-start w-full"> {/* Centering container */}
-            <div className="flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-8">
-                {navLinks.map((link) => (
-                <a
-                    key={link.name}
-                    href={link.path}
-                    className="relative z-0 group inline-block px-2 py-2 rounded-lg min-w-[100px] text-center"
-                >
-                    {/* Stable text container */}
-                    <span className="font-medium text-white text-sm group-hover:font-bold inline-block w-full whitespace-nowrap">
-                    {link.name}
-                    </span>
-                    
-                    {/* Background effect */}
-                    <span className="absolute inset-0 h-full w-full rounded-lg bg-[#437057] transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 z-[-1]"></span>
-                </a>
-                ))}
-            </div>
-         </div>
-
-         <div className="flex items-center space-x-4 ml-8 justify-end"> {/* Container for auth buttons */}
-            {/* Login Button (Subtle outline) */}
-            <a
-                href="/login"
-                className="relative px-2.5 py-1.5 rounded-lg border-2 border-white/20 hover:border-[#00D1CD] text-white group transition-all duration-300 min-w-[100px] text-center"
-            >
-                <span className="relative z-10 font-medium">Login</span>
-                <span className="absolute inset-0 bg-[#00D1CD] rounded-lg opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
-                {/* <User className="inline mr-2" size={16} />   */}
+    <header className="bg-[#2F5249] text-white ">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 shadow-md">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <a href="/">
+              <PawScanLogo className="h-8 w-auto" />
             </a>
+          </div>
 
-            {/* Sign Up Button (Prominent solid) */}
+          {/* Desktop Nav */}
+          <div className="hidden lg:flex lg:items-center lg:space-x-6">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className="relative z-0 group inline-block px-3 py-2 rounded-md text-white font-medium hover:font-bold transition-all duration-300"
+              >
+                <span className="relative z-10">{link.name}</span>
+                <span className="absolute inset-0 bg-[#437057] transform scale-y-0 group-hover:scale-y-100 transition-transform duration-300 rounded-md z-[-1]"></span>
+              </a>
+            ))}
+          </div>
+
+          {/* Auth Buttons */}
+          <div className="hidden lg:flex lg:items-center lg:space-x-4">
             <a
-                href="/signup"
-                className="relative px-2.5 py-1.5 rounded-lg bg-[#00D1CD] hover:bg-[#00B8B4] text-white font-bold transition-all duration-300 min-w-[100px] text-center shadow-md hover:shadow-lg hover:shadow-[#00B8B4]/40"
+              href="/login"
+              className="relative px-3 py-1.5 rounded-md border-2 border-white/20 text-white font-medium group hover:border-[#00D1CD] transition-all duration-300 min-w-[90px] text-center"
             >
-                <span className="relative z-10">Sign Up</span>
-                <span className="absolute inset-0 rounded-lg bg-white/10 opacity-0 hover:opacity-20 transition-opacity duration-300"></span>
-                {/* <ArrowRight className="inline ml-2" size={16} /> */}
+              <span className="relative z-10">Login</span>
+              <span className="absolute inset-0 bg-[#00D1CD] rounded-md opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
             </a>
-        </div>
+            <a
+              href="/signup"
+              className="relative px-3 py-1.5 rounded-md bg-[#00D1CD] text-white font-bold transition-all duration-300 min-w-[90px] text-center shadow-md hover:bg-[#00B8B4] hover:shadow-lg hover:shadow-[#00B8B4]/40"
+            >
+              <span className="relative z-10">Sign Up</span>
+            </a>
+          </div>
 
-      </div>
-    </nav>
-  );
+          {/* Mobile menu button */}
+          <div className="flex lg:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-[#00D1CD] focus:outline-none"
+            >
+              <span className="sr-only">Open main menu</span>
+              <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
+        <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+        <DialogPanel className="fixed inset-y-0 right-0 w-full max-w-sm bg-[#2F5249] p-6 overflow-y-auto shadow-lg">
+          <div className="flex items-center justify-between">
+            <a href="/">
+              <PawScanLogo className="h-8 w-auto" />
+            </a>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 rounded-md text-white hover:text-[#00D1CD] focus:outline-none"
+            >
+              <span className="sr-only">Close menu</span>
+              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
+          <div className="mt-6 space-y-6">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className="block px-3 py-2 rounded-md text-white font-medium hover:bg-[#437057] transition-colors duration-300"
+              >
+                {link.name}
+              </a>
+            ))}
+            <a
+              href="/login"
+              className="block px-3 py-2 rounded-md border-2 border-white/20 text-white font-medium hover:border-[#00D1CD] transition-all duration-300"
+            >
+              Login
+            </a>
+            <a
+              href="/signup"
+              className="block px-3 py-2 rounded-md bg-[#00D1CD] text-white font-bold hover:bg-[#00B8B4] transition-all duration-300"
+            >
+              Sign Up
+            </a>
+          </div>
+        </DialogPanel>
+      </Dialog>
+    </header>
+  )
 }
-
-export default Navbar
