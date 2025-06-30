@@ -13,7 +13,7 @@ async function loginUser(email, password) {
   console.log("ID Token:", idToken);
 
   // ✅ Send the token to your Spring Boot backend
-  const response = await fetch("http://localhost:8080/api/user", {
+  const response = await fetch("http://localhost:8080/api/v1/user", {
     method: "GET",
     headers: {
       Authorization: `Bearer ${idToken}`, // 🛡️ JWT Auth header
