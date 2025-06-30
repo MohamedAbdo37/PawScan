@@ -16,4 +16,6 @@ public class UserController {
         String uid = (String) authentication.getPrincipal();
         return  ResponseEntity.ok("Hello user with UID: " + uid);
     }
+
+
 }

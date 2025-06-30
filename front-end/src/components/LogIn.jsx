@@ -1,5 +1,31 @@
 import { useState } from "react";
 import PawScanLogo from "./PawScanLogo";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase";
+
+
+async function loginUser(email, password) {
+  console.log("Trying to log in with:", email, password);
+  const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+  const idToken = await userCredentials.user.getIdToken();
+
+  console.log("User logged in successfully:", userCredentials.user);  
+  console.log("ID Token:", idToken);
+
+  // ✅ Send the token to your Spring Boot backend
+  const response = await fetch("http://localhost:8080/api/user", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${idToken}`, // 🛡️ JWT Auth header
+    },
+  });
+
+  const result = await response.text(); // Or .json() if your backend returns JSON
+  console.log("✅ Backend response:", result);
+
+  return result;
+
+}
 
 export default function Example() {
 
@@ -13,7 +39,22 @@ export default function Example() {
    const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
-    console.log("Form submitted with values:", formVars);
+    const { email, password } = formVars;
+    
+    if (email && password) {
+      loginUser(email, password)
+        .then(() => {
+          // Handle successful login, e.g., redirect to dashboard
+          console.log("Login successful");
+        })
+        .catch((error) => {
+          // Handle login error
+          console.error("Login failed:", error);
+        });
+    }
+    else {
+      console.error("Email and password are required for login.");
+    }
 
    }
   
