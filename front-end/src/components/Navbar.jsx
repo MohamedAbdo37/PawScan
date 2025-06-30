@@ -4,7 +4,7 @@ import { Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outli
 import PawScanLogo from './PawScanLogo'
 
 const navLinks = [
-  { name: 'Use the AI Model', href: '/ai-model' },
+  { name: 'Pet AI Analyzer', href: '/ai-model' },
   { name: 'Features', href: '/features' },
   { name: 'About Us', href: '/about' },
 ]
