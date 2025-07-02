@@ -14,7 +14,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(@NotNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                 .allowedOrigins("https://paw-scan.vercel.app")
+                 .allowedOrigins("*")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*")
                     .allowCredentials(true);
