@@ -1,0 +1,16 @@
+ <svg
+          className="w-10 h-10 animate-bounce-subtle transform hover:scale-110 transition-transform duration-300"
+          viewBox="0 0 120 120"
+        >
+          <circle cx="60" cy="60" r="50" fill="#97B067"/>
+          {/* These two circles are now positioned at the bottom of the paw as per your latest input */}
+          <ellipse cx="60" cy="75" rx="23" ry="19" fill="white" transform="rotate(-20 60 75)"/>
+
+          {/* Ellipses (toes) are now positioned at the top and rotated as per your latest input */}
+          {/* Left toe: positioned at (30, 45) and rotated -15 degrees around (10, 35) */}
+          <ellipse cx="30" cy="45" rx="8" ry="12" fill="white"  transform="rotate(-15 30 45)" />
+          {/* Middle toe: positioned at (60, 40) - no rotation */}
+          <ellipse cx="55" cy="40" rx="8" ry="12" fill="white"/>
+          {/* Right toe: positioned at (80, 45) and rotated 15 degrees around (50, 35) */}
+          <ellipse cx="82" cy="40" rx="8" ry="12" fill="white"  transform="rotate(15 82 40)"/>
+        </svg>
