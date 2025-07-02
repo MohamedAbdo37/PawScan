@@ -14,10 +14,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(@NotNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                .allowedOrigins("https://paw-scan.vercel.app")
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+                 .allowedOrigins("https://paw-scan.vercel.app")
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
             }
         };
     }
