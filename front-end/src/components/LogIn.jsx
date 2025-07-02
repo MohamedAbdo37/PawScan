@@ -4,6 +4,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 // import { useNavigate } from "react-router-dom";
 
+const api_root = import.meta.env.VITE_API_URL_ROOT || 'http://localhost:8080'; // Ensure this is set in your .env file
+
 
 async function loginUser(email, password) {
   console.log("Trying to log in with:", email, password);
@@ -12,7 +14,7 @@ async function loginUser(email, password) {
 
   
   // ✅ Send the token to your Spring Boot backend
-  const response = await fetch("http://localhost:8080/api/v1/auth/login", {
+  const response = await fetch(`${api_root}/api/v1/auth/login`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${idToken}`, // 🛡️ JWT Auth header

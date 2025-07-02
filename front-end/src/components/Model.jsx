@@ -11,6 +11,7 @@ const Model = () => {
   const [loading, setLoading] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(true); // or false initially
 
+  const api_root = import.meta.env.VITE_API_URL_ROOT || 'http://localhost:8080'; // Ensure this is set in your .env file
   
 
 
@@ -65,7 +66,7 @@ const Model = () => {
     let analyzed = false;
 
     try {
-      const res = await fetch('http://localhost:8080/api/v1/scan', {
+      const res = await fetch(`${api_root}/api/v1/scan`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${await getToken()}`, // 🛡️ JWT Auth header
@@ -87,7 +88,7 @@ const Model = () => {
       const uid = await auth.currentUser.uid;
       formData.append('uid',uid); // 🐾 Attach user ID to the form data
       try{
-        const res = await fetch('http://localhost:8080/api/v1/upload/image', {
+        const res = await fetch(`${api_root}/api/v1/upload/image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${await getToken()}`, // 🛡️ JWT Auth header

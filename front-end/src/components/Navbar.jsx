@@ -17,6 +17,8 @@ export default function Navbar() {
   const [isAuthorized, setIsAuthorized] = useState(null);
   const [userProfileImage, setUserProfileImage] = useState("https://placehold.co/150x150/F30067/FFFFFF?text=User");
 
+  const api_root = import.meta.env.VITE_API_URL_ROOT || 'http://localhost:8080'; // Ensure this is set in your .env file
+
 
 const handleLogout = () => {
   signOut(auth)
@@ -53,7 +55,7 @@ const handleLogout = () => {
           const token = await auth.currentUser.getIdToken();
           const uid = auth.currentUser?.uid; // Get the current user's UID
           if (!uid) throw new Error("User not authenticated");
-          const response = await fetch(`http://localhost:8080/api/v1/auth/profile/image/${uid}`, {
+          const response = await fetch(`${api_root}/api/v1/auth/profile/image/${uid}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`, // 🛡️ JWT Auth heade

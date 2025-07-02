@@ -6,6 +6,9 @@ const AnalyzedImageModal = ({ isOpen, onClose, imageData, getToken }) => {
   const [aiResultMessage, setAiResultMessage] = useState(null);
   const [error, setError] = useState(null);
 
+  const api_root = import.meta.env.VITE_API_URL_ROOT || 'http://localhost:8080';
+
+
   // Reset state when modal opens/closes or image data changes
   useEffect(() => {
     if (isOpen) {
@@ -34,7 +37,7 @@ const AnalyzedImageModal = ({ isOpen, onClose, imageData, getToken }) => {
       const imageBlob = await imageBlobResponse.blob();
       formData.append('file', imageBlob, `image-${imageData.id}.png`);
 
-      const res = await fetch('http://localhost:8080/api/v1/scan', {
+      const res = await fetch(`${api_root}/api/v1/scan`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

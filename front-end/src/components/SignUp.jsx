@@ -8,9 +8,11 @@ async function signUp(email, password, username) {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
 
+  const api_root = import.meta.env.VITE_API_URL_ROOT || 'http://localhost:8080'; // Ensure this is set in your .env file
+
   const idToken = await user.getIdToken(); 
   try {
-    const res = await fetch("http://localhost:8080/api/v1/auth/signup", {
+    const res = await fetch(`${api_root}/api/v1/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

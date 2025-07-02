@@ -17,6 +17,8 @@ const ProfilePage = () => {
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false); // New state for edit modal
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
 
+  const api_root = import.meta.env.VITE_API_URL_ROOT || 'http://localhost:8080'; // Ensure this is set in your .env file
+
 
   const getToken = async () => {
       const user = auth.currentUser;
@@ -31,7 +33,7 @@ const ProfilePage = () => {
         const token = await getToken();
         const uid = auth.currentUser?.uid; // Get the current user's UID
         if (!uid) throw new Error("User not authenticated");
-        const response = await fetch(`http://localhost:8080/api/v1/auth/profile/${uid}`, {
+        const response = await fetch(`${api_root}/api/v1/auth/profile/${uid}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`, // 🛡️ JWT Auth header

@@ -11,6 +11,8 @@ const EditProfileModal = ({ isOpen, onClose, userProfile, onSave, getToken }) =>
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const api_root = import.meta.env.VITE_API_URL_ROOT || 'http://localhost:8080';
+
   useEffect(() => {
     // Reset form data and preview when modal opens/closes or userProfile changes
     if (isOpen) {
@@ -70,7 +72,7 @@ const EditProfileModal = ({ isOpen, onClose, userProfile, onSave, getToken }) =>
         fileForm.append('uid', uid);
 
         const uploadRes = await fetch(
-          'http://localhost:8080/api/v1/auth/upload/profile-image',
+          `${api_root}/api/v1/auth/upload/profile-image`,
           {
             method: 'POST',                    // ← HERE
             headers: {
@@ -91,7 +93,7 @@ const EditProfileModal = ({ isOpen, onClose, userProfile, onSave, getToken }) =>
       }
 
       // Send update request to backend
-      const res = await fetch(`http://localhost:8080/api/v1/auth/update/profile/${uid}`, {
+      const res = await fetch(`${api_root}/api/v1/auth/update/profile/${uid}`, {
         method: 'PUT', // Assuming PUT for updating profile
         headers: {
           'Content-Type': 'application/json',
