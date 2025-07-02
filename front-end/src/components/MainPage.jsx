@@ -3,10 +3,15 @@ import PhotoFrame from './PhotoFrame';
 import detectionImage from '../assets/detection.png';
 import segmentationImage from '../assets/segmentation.png';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 const MainPage = () => {
 
     const [isClicked, setIsClicked] = useState(false);
+
+    const navigator = useNavigate();
+    
 
   return (
      <div className="flex-grow overflow-y-auto pt-14"> {/* This div ensures the content area is scrollable */}
@@ -43,6 +48,7 @@ const MainPage = () => {
                                 ${isClicked ? 'scale-95 shadow-inner' : ''}`}
                     onClick={() => {
                         setIsClicked(true);
+                        navigator('/ai-model');
                         setTimeout(() => setIsClicked(false), 150);
                     }}
                     onMouseLeave={() => setIsClicked(false)} // Reset if mouse leaves during animation

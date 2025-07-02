@@ -1,7 +1,10 @@
-import { useState } from 'react'
-import { Dialog, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel, Popover, PopoverButton, PopoverGroup, PopoverPanel } from '@headlessui/react'
+import { useState, useEffect } from 'react'
+import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import PawScanLogo from './PawScanLogo'
+import { onAuthStateChanged, signOut } from 'firebase/auth'
+import { auth } from '../firebase/firebase'
+
 
 const navLinks = [
   { name: 'Pet AI Analyzer', href: '/ai-model' },
@@ -11,6 +14,66 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isAuthorized, setIsAuthorized] = useState(null);
+  const [userProfileImage, setUserProfileImage] = useState("https://placehold.co/150x150/F30067/FFFFFF?text=User");
+
+
+const handleLogout = () => {
+  signOut(auth)
+    .then(() => {
+      console.log("User signed out");
+      // Optional: redirect to login page or home
+    })
+    .catch((error) => {
+      console.error("Logout error:", error);
+    });
+};
+  
+  useEffect(() => {
+    // Set up the auth state listener
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is logged in:", user);
+        setIsAuthorized(true);
+      } else {
+        console.log("User is not logged in");
+        setIsAuthorized(false);
+      }
+    });
+
+    // Clean up the listener on unmount to avoid memory leaks
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    // Fetch user profile image if the user is authorized
+    if (isAuthorized) {
+      const fetchUserProfileImage = async () => {
+        try {
+          const token = await auth.currentUser.getIdToken();
+          const uid = auth.currentUser?.uid; // Get the current user's UID
+          if (!uid) throw new Error("User not authenticated");
+          const response = await fetch(`http://localhost:8080/api/v1/auth/profile/image/${uid}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`, // 🛡️ JWT Auth heade
+            },
+          });
+
+          const data = await response.json();
+          if (data.imgURL) {
+            setUserProfileImage(data.imgURL);
+          } else {
+            console.warn("No profile image found for user");
+          }
+        } catch (error) {
+          console.error("Error fetching user profile image:", error);
+        }
+      };
+      fetchUserProfileImage();
+    }
+  }, [isAuthorized]);
+   
 
   return (
     <header className="bg-[#2F5249] text-white ">
@@ -24,7 +87,7 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex lg:items-center lg:space-x-6">
+          <div className="hidden justify-center lg:flex lg:items-center lg:space-x-6 ">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -39,6 +102,7 @@ export default function Navbar() {
 
           {/* Auth Buttons */}
           <div className="hidden lg:flex lg:items-center lg:space-x-4">
+            { (!isAuthorized || isAuthorized === null) && <>
             <a
               href="/login"
               className="relative px-3 py-1.5 rounded-md border-2 border-white/20 text-white font-medium group hover:border-[#00D1CD] transition-all duration-300 min-w-[90px] text-center"
@@ -52,10 +116,37 @@ export default function Navbar() {
             >
               <span className="relative z-10">Sign Up</span>
             </a>
+            </>}
+            {(isAuthorized) && <>
+                <a
+                  href="/"
+                  className="relative px-3 py-1.5 rounded-md bg-red-600 text-white font-bold transition-all duration-300 min-w-[90px] text-center shadow-md hover:bg-red-500 hover:shadow-lg hover:shadow-red-500/40"
+                  onClick={handleLogout}
+                >
+                  <span className="relative z-10">Logout</span>
+                </a>
+                 <div className="flex -space-x-1 overflow-hidden">
+                  <img
+                  alt=""
+                  src={userProfileImage}
+                  className="inline-block size-10 rounded-full ring-2 ring-white"
+                  onClick={() => window.location.href = `/profile/${auth.currentUser.uid}`} // Redirect to profile page
+                />
+                  </div>
+              </>
+            }
           </div>
 
           {/* Mobile menu button */}
           <div className="flex lg:hidden">
+            {isAuthorized && <div className="flex -space-x-1 overflow-hidden">
+                  <img
+                  alt=""
+                  src={userProfileImage}
+                  className="inline-block size-10 rounded-full ring-2 ring-white"
+                  onClick={() => window.location.href = `/profile/${auth.currentUser.uid}`}
+                />
+            </div>}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
@@ -70,12 +161,11 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
+        
         <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
         <DialogPanel className="fixed inset-y-0 right-0 w-full max-w-sm bg-[#2F5249] p-6 overflow-y-auto shadow-lg">
           <div className="flex items-center justify-between">
-            <a href="/">
-              <PawScanLogo className="h-8 w-auto" />
-            </a>
+          
             <button
               type="button"
               onClick={() => setMobileMenuOpen(false)}
@@ -95,6 +185,7 @@ export default function Navbar() {
                 {link.name}
               </a>
             ))}
+            { !(isAuthorized)&&  <>
             <a
               href="/login"
               className="block px-3 py-2 rounded-md border-2 border-white/20 text-white font-medium hover:border-[#00D1CD] transition-all duration-300"
@@ -107,6 +198,18 @@ export default function Navbar() {
             >
               Sign Up
             </a>
+            </>}
+
+            {(isAuthorized) && <>
+                <a
+                  href="/"
+                  className="block px-3 py-2 rounded-md bg-red-600 text-white font-bold transition-all duration-300 min-w-[90px] text-center shadow-md hover:bg-red-500 hover:shadow-lg hover:shadow-red-500/40"
+                  onClick={handleLogout}
+                >
+                  <span className="relative z-10">Logout</span>
+                </a> </> 
+            }
+
           </div>
         </DialogPanel>
       </Dialog>

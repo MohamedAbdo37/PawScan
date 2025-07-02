@@ -1,31 +1,36 @@
 package com.knightslab.pawscan.config;
 
+import com.google.api.client.util.Value;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.FirestoreClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.FileInputStream;
 
 @Configuration
 public class FirebaseConfig {
 
-    @PostConstruct
-    public void initFirebase() throws IOException{
-        InputStream serviceAccount = getClass()
-                .getResourceAsStream("/firebase/serviceAccountKey.json");
+    @Value("${FIREBASE_CREDENTIAL_PATH}")
+    private String path;
 
-        assert serviceAccount != null;
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
+    @Bean
+    public Firestore firestore() throws Exception {
+        if (FirebaseApp.getApps().isEmpty()) {
+            FileInputStream serviceAccount =
+                    new FileInputStream(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
 
-        if (FirebaseApp.getApps().isEmpty()){
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
+
             FirebaseApp.initializeApp(options);
-            System.out.println("✅ Firebase has been initialized.");
         }
-
+        System.out.println("✅ Firebase has been initialized.");
+        return FirestoreClient.getFirestore();
     }
 }
+

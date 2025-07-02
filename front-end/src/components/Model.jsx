@@ -1,9 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
+import Modal from "react-modal";
+import { useNavigate } from 'react-router-dom';
+import PawScanLogo from './PawScanLogo';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from "../firebase/firebase";
 
 const Model = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(true); // or false initially
+
+  
+
+
+  useEffect(() => {
+    // Set up the auth state listener
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is logged in:", user);
+        setIsAuthorized(true);
+      } else {
+        console.log("User is not logged in");
+        setIsAuthorized(false);
+      }
+    });
+
+    // Clean up the listener on unmount to avoid memory leaks
+    return () => unsubscribe();
+  }, []);
+
+  const getToken = async () => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("User not authenticated");
+    const token = await user.getIdToken(/* forceRefresh */ true);
+    return token;
+  };
+  
+
+  const navigator = useNavigate();
+
+  const modalclose = () => {
+    navigator('/login');
+  }
+
+  const modelOpen = () => {
+    navigator('/');
+  }
 
   const handleFileChange = (e) => {
     setSelectedImage(e.target.files[0]);
@@ -18,21 +61,52 @@ const Model = () => {
     const formData = new FormData();
     formData.append('file', selectedImage);
 
+    
+    let analyzed = false;
+
     try {
       const res = await fetch('http://localhost:8080/api/v1/scan', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${await getToken()}`, // 🛡️ JWT Auth header
+        },
         body: formData,
       });
 
       const data = await res.json();
-      console.log('Response from server:', data);
       setResult(data);
+      analyzed = true;
     } catch (err) {
       console.error('Upload failed:', err);
       setResult({ error: 'Failed to analyze image.' });
     }
 
     setLoading(false);
+
+    if (analyzed) { 
+      const uid = await auth.currentUser.uid;
+      formData.append('uid',uid); // 🐾 Attach user ID to the form data
+      try{
+        const res = await fetch('http://localhost:8080/api/v1/upload/image', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${await getToken()}`, // 🛡️ JWT Auth header
+        },
+        body: formData,
+      });
+
+        if (!res.ok) {
+          throw new Error('Failed to upload image');
+        }
+
+        console.log('Image uploaded successfully');
+        
+      } catch (err) {
+        console.error('Image upload failed:', err);
+        setResult({ error: 'Failed to upload image.' });
+      }
+
+    }
   };
 
   return (
@@ -49,7 +123,9 @@ const Model = () => {
           backgroundSize: '40px 40px',
         }}
       ></div>
-
+      
+      
+      {/* Main Container */}
       <div className="max-w-5xl mx-auto z-1 relative bg-[#437057] p-10 rounded-2xl shadow-2xl">
         {/* Header */}
         <header className="text-center mb-10">
@@ -124,6 +200,53 @@ const Model = () => {
           </div>
         )}
       </div>
+
+      {/* Modal for additional information or actions */}
+      <Modal
+          isOpen={ !isAuthorized} // Show modal if user is not authorized
+          onRequestClose={modelOpen}
+          contentLabel="Authorization Required"
+          className="bg-[#437057] text-white p-6 m-auto rounded-lg shadow-2xl w-full
+                    flex flex-col items-center space-y-4 border-2 border-[#97B067]"
+          overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+          ariaHideApp={false}
+          style={{
+            content: {
+              // borderRadius: '20px',
+              marginTop: '25vh',
+              // padding: '40px',
+              maxWidth: '500px',
+              // maxHeight: '60vh',
+              // boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+              // margin: 'auto',
+              textAlign: 'center',
+              zIndex: 1000,
+            },
+            overlay: {
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            },
+          }}
+      >
+        <div className="">
+            {/* Logo at the top of the modal content */}
+            <div >
+              <PawScanLogo size="text-3xl" />
+            </div>
+
+            <div className="text-4xl mt-4">🔑</div> {/* Key emoji icon */}
+            <p className="text-xl font-semibold text-center leading-relaxed">
+              Please log in to access the AI Model features!
+            </p>
+            <button
+              onClick={modalclose} // Use the onClose prop to close the modal
+              className="mt-4 px-6 py-2 bg-[#F30067] text-white font-bold rounded-full shadow-md
+                        hover:bg-[#CC005A] transition duration-300 transform hover:scale-105"
+            >
+              Got It!
+            </button>
+          </div>
+      </Modal>
+
     </div>
   );
 };

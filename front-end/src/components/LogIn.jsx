@@ -2,6 +2,7 @@ import { useState } from "react";
 import PawScanLogo from "./PawScanLogo";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase";
+// import { useNavigate } from "react-router-dom";
 
 
 async function loginUser(email, password) {
@@ -9,11 +10,9 @@ async function loginUser(email, password) {
   const userCredentials = await signInWithEmailAndPassword(auth, email, password);
   const idToken = await userCredentials.user.getIdToken();
 
-  console.log("User logged in successfully:", userCredentials.user);  
-  console.log("ID Token:", idToken);
-
+  
   // ✅ Send the token to your Spring Boot backend
-  const response = await fetch("http://localhost:8080/api/v1/user", {
+  const response = await fetch("http://localhost:8080/api/v1/auth/login", {
     method: "GET",
     headers: {
       Authorization: `Bearer ${idToken}`, // 🛡️ JWT Auth header
@@ -21,7 +20,9 @@ async function loginUser(email, password) {
   });
 
   const result = await response.text(); // Or .json() if your backend returns JSON
+  window.localStorage.setItem("uid", result); // Store the user ID or any relevant data
   console.log("✅ Backend response:", result);
+
 
   return result;
 
@@ -30,6 +31,9 @@ async function loginUser(email, password) {
 export default function Example() {
 
    const [formVars, setFormVars] = useState({});
+   const [loginError, setLoginError] = useState(null); 
+    // const navigate = useNavigate();
+
 
    const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +42,7 @@ export default function Example() {
 
    const handleSubmit = (e) => {
     e.preventDefault();
+    setLoginError(null);
     // Handle form submission logic here
     const { email, password } = formVars;
     
@@ -46,13 +51,19 @@ export default function Example() {
         .then(() => {
           // Handle successful login, e.g., redirect to dashboard
           console.log("Login successful");
+          window.location.href = "/ai-model"; // Redirect to home page after login
+          // navigate("/ai-model"); // Use useNavigate to redirect to the AI model page
+
         })
         .catch((error) => {
           // Handle login error
-          console.error("Login failed:", error);
+          console.error("Login failed:", error.message);
+          setLoginError(error.message || "An unexpected error occurred during login.")
+          
         });
     }
     else {
+      setLoginError("Email and password are required for login.");
       console.error("Email and password are required for login.");
     }
 
@@ -61,27 +72,36 @@ export default function Example() {
     
   return (
     <>
-      <div className="bg-[#97B067] flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-
-        <div className="bg-white px-10 py-5 mt-10 sm:mx-auto sm:w-full sm:max-w-sm rounded-lg shadow-md">
+      <div className="bg-[#97B067] flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 relative overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0 z-0 opacity-50"
+             style={{
+               backgroundImage: `radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 70%),
+                                 radial-gradient(circle at 80% 20%, rgba(0,0,0,0.05) 0%, transparent 70%)`,
+               backgroundSize: '250px 250px',
+               backgroundRepeat: 'repeat',
+             }}>
+        </div>
+      
+        <div className="relative z-10 bg-white bg-opacity-95 px-10 py-8 mt-10 sm:mx-auto sm:w-full sm:max-w-sm rounded-xl shadow-2xl border border-gray-200 transform animate-fade-in-up"> {/* Enhanced form card */}
             <div className="sm:mx-auto sm:w-full sm:max-w-sm" >
                 <div className="flex justify-center pt-4">
                     <a
                         alt="PawScan"
-                        src="/"
+                        href="/"
                         className="mx-auto h-10 w-auto scale-125 hover:scale-150 transition-transform duration-300"
                     >
-                        <PawScanLogo text={true} textColor={'554433'}/>
+                        <PawScanLogo textColor="000000"/>
                     </a>
                 </div>
-                <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+                <h2 className="mt-8 text-center text-3xl font-bold tracking-tight text-[#2F5249] animate-fade-in delay-100">
                     Log in to your account
                 </h2>
             </div>
 
-          <form onSubmit={handleSubmit} method="POST" className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
+          <form onSubmit={handleSubmit} method="POST" className="space-y-6 mt-8">
+            <div className="animate-fade-in delay-200">
+              <label htmlFor="email" className="block text-sm font-medium text-[#2F5249] mb-1">
                 Email address
               </label>
               <div className="mt-2">
@@ -92,21 +112,21 @@ export default function Example() {
                   required
                   autoComplete="email"
                   onChange={handleChange}
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                  className="block w-full rounded-md border-0 bg-gray-50 px-3 py-2 text-base text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#97B067] sm:text-sm sm:leading-6 transition-all duration-200"
                 />
               </div>
             </div>
 
-            <div>
+            <div className="animate-fade-in delay-300">
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
+                <label htmlFor="password" className="block text-sm font-medium text-[#2F5249] mb-1">
                   Password
                 </label>
-                <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                {/* <div className="text-sm">
+                  <a href="#" className="font-semibold text-[#F30067] hover:text-[#CC005A] transition-colors duration-200">
                     Forgot password?
                   </a>
-                </div>
+                </div> */}
               </div>
               <div className="mt-2">
                 <input
@@ -116,24 +136,30 @@ export default function Example() {
                   required
                   autoComplete="current-password"
                   onChange={handleChange}
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                  className="block w-full rounded-md border-0 bg-gray-50 px-3 py-2 text-base text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#F30067] sm:text-sm sm:leading-6 transition-all duration-200"
                 />
               </div>
             </div>
 
-            <div>
+            {loginError && (
+              <div className="text-red-600 text-sm text-center animate-fade-in delay-400">
+                {loginError}
+              </div>
+            )}
+
+            <div className="animate-fade-in delay-500">
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full justify-center rounded-md bg-gradient-to-r from-[#F30067] to-[#CC005A] px-3 py-2 text-md font-semibold text-white shadow-lg hover:from-[#CC005A] hover:to-[#F30067] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F30067] transition-all duration-300 transform hover:scale-105"
               >
                 Sign in
               </button>
             </div>
           </form>
 
-          <p className="mt-10 text-center text-sm/6 text-gray-500">
+          <p className="mt-8 text-center text-sm text-gray-600 animate-fade-in delay-600">
             Not a member?{' '}
-            <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+            <a href="/signup" className="font-semibold text-[#F30067] hover:text-[#CC005A] transition-colors duration-200">
               Join Us.
             </a>
           </p>

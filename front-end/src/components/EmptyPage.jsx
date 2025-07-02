@@ -14,7 +14,7 @@ const EmptyPage = () => {
            }}>
       </div>
 
-      <div className="relative z-10 bg-white bg-opacity-90 p-12 rounded-3xl shadow-2xl text-center
+      <div className="relative z-1 bg-white bg-opacity-90 p-12 rounded-3xl shadow-2xl text-center
                       transform animate-fade-in-up max-w-lg w-full"> {/* Responsive width */}
 
         {/* Logo at the top of the 404 box */}
