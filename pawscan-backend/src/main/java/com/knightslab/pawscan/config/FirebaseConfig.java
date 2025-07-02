@@ -21,7 +21,7 @@ public class FirebaseConfig {
     public Firestore firestore() throws Exception {
         if (FirebaseApp.getApps().isEmpty()) {
             FileInputStream serviceAccount =
-                    new FileInputStream(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
+                    new FileInputStream(this.path);
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
