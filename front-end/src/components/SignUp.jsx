@@ -15,7 +15,8 @@ async function signUp(email, password, username) {
     const res = await fetch(`${api_root}/v1/auth/signup`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${idToken}` 
       },
       credentials: 'include',
       body: JSON.stringify({ idToken, username })
