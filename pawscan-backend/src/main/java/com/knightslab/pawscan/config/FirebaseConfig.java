@@ -15,8 +15,7 @@ import java.io.IOException;
 @Configuration
 public class FirebaseConfig {
 
-    @Value("${firebase.credential.path}")
-    private String firebaseCredentialPath;
+    private String firebaseCredentialPath = "/home/ubuntu/PawScan/serviceAccountKey.json";
 
     @Bean
     public Firestore firestore() throws IOException {
