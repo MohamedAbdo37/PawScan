@@ -15,7 +15,7 @@ import java.io.IOException;
 @Configuration
 public class FirebaseConfig {
 
-    @Value("${FIREBASE_CREDENTIAL_PATH}")
+    @Value("${firebase.credential.path}")
     private String firebaseCredentialPath;
 
     @Bean
