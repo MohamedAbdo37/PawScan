@@ -77,6 +77,7 @@ const EditProfileModal = ({ isOpen, onClose, userProfile, onSave, getToken }) =>
             method: 'POST',                    // ← HERE
             headers: {
               Authorization: `Bearer ${await getToken()}`,
+              
               // NOTE: Do NOT set Content-Type for multipart — browser will do it
             },
             body: fileForm,
