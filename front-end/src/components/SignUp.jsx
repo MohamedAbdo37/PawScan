@@ -12,7 +12,7 @@ async function signUp(email, password, username) {
 
   const idToken = await user.getIdToken(); 
   try {
-    const res = await fetch(`${api_root}/api/v1/auth/signup`, {
+    const res = await fetch(`${api_root}/v1/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

@@ -66,7 +66,7 @@ const Model = () => {
     let analyzed = false;
 
     try {
-      const res = await fetch(`${api_root}/api/v1/scan`, {
+      const res = await fetch(`${api_root}/v1/scan`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${await getToken()}`, // 🛡️ JWT Auth header
@@ -88,7 +88,7 @@ const Model = () => {
       const uid = await auth.currentUser.uid;
       formData.append('uid',uid); // 🐾 Attach user ID to the form data
       try{
-        const res = await fetch(`${api_root}/api/v1/upload/image`, {
+        const res = await fetch(`${api_root}/v1/upload/image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${await getToken()}`, // 🛡️ JWT Auth header

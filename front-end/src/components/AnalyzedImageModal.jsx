@@ -37,7 +37,7 @@ const AnalyzedImageModal = ({ isOpen, onClose, imageData, getToken }) => {
       const imageBlob = await imageBlobResponse.blob();
       formData.append('file', imageBlob, `image-${imageData.id}.png`);
 
-      const res = await fetch(`${api_root}/api/v1/scan`, {
+      const res = await fetch(`${api_root}/v1/scan`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

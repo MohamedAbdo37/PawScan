@@ -72,7 +72,7 @@ const EditProfileModal = ({ isOpen, onClose, userProfile, onSave, getToken }) =>
         fileForm.append('uid', uid);
 
         const uploadRes = await fetch(
-          `${api_root}/api/v1/auth/upload/profile-image`,
+          `${api_root}/v1/auth/upload/profile-image`,
           {
             method: 'POST',                    // ← HERE
             headers: {
@@ -93,7 +93,7 @@ const EditProfileModal = ({ isOpen, onClose, userProfile, onSave, getToken }) =>
       }
 
       // Send update request to backend
-      const res = await fetch(`${api_root}/api/v1/auth/update/profile/${uid}`, {
+      const res = await fetch(`${api_root}/v1/auth/update/profile/${uid}`, {
         method: 'PUT', // Assuming PUT for updating profile
         headers: {
           'Content-Type': 'application/json',

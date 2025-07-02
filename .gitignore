@@ -12,3 +12,5 @@
 /.nuxt/dist
 /.nuxt/standalone
 /.nuxt/legacy
+/.vscode
+/.idea
