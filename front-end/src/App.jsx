@@ -38,7 +38,7 @@ const App = () => {
   ));
   return (
     <>
-      <BrowserRouter router={router}/>
+      <RouterProvider router={router}/>
     </>
   )
 
